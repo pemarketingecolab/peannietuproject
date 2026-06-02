@@ -33,23 +33,36 @@
         }
         .projects-container h1 { font-size: 2.5rem; margin-bottom: 50px; text-shadow: 0 0 10px rgba(255,255,255,0.5); font-weight: 800;}
         
-        .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; max-width: 950px; margin-bottom: 20px;}
+        /* 調整格線配置以對應新排版 */
+        .grid-cards { 
+            display: flex; flex-direction: column; gap: 30px; 
+            width: 100%; max-width: 950px; margin-bottom: 20px;
+            z-index: 5; position: relative;
+        }
+        .row-2 {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+        }
+        
         .project-card {
             background: rgba(10, 30, 100, 0.45); border: 2px solid #3366ff; border-radius: 20px;
             padding: 25px; display: flex; align-items: center; justify-content: space-between;
-            backdrop-filter: blur(15px); transition: 0.3s; box-shadow: 0 0 20px rgba(51,102,255,0.3);
+            backdrop-filter: blur(15px); transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; box-shadow: 0 0 20px rgba(51,102,255,0.3);
+            position: relative; z-index: 10; cursor: pointer;
+        }
+        .project-card.full-width {
+            width: 100%;
         }
         .project-card:hover { transform: translateY(-5px); border-color: var(--accent-cyan); box-shadow: 0 0 30px rgba(51,204,255,0.5); }
-        .card-content { display: flex; align-items: center; gap: 20px; }
-        .icon-group { display: flex; gap: 8px; align-items: center; }
+        .card-content { display: flex; align-items: center; gap: 20px; pointer-events: none;}
+        .icon-group { display: flex; gap: 15px; align-items: center; } 
         .card-icon { width: 65px; height: 65px; object-fit: contain; }
         .card-title { font-weight: 800; font-size: 1.1rem; line-height: 1.3; color: white; }
-        .btn-open { background: white; color: #0033cc; padding: 8px 20px; border-radius: 20px; font-weight: 800; cursor: pointer; border:none;}
+        .btn-open { background: white; color: #0033cc; padding: 8px 20px; border-radius: 20px; font-weight: 800; border:none; pointer-events: none;}
 
         .btn-nav {
             background: #33cc99; color: white; padding: 12px 40px; border-radius: 30px;
             font-size: 1.1rem; font-weight: 800; cursor: pointer; border:none; z-index: 5; margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(51, 204, 153, 0.4); transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(51, 204, 153, 0.4); transition: transform 0.3s;
         }
         .btn-nav:hover { transform: scale(1.05); }
 
@@ -58,143 +71,4 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
             display: flex; justify-content: center; align-items: center;
-            z-index: 9999; opacity: 0; pointer-events: none; transition: 0.3s;
-        }
-        .modal-overlay.show { opacity: 1; pointer-events: auto; }
-        
-        .modal-box {
-            background: linear-gradient(135deg, #041038, #091a54);
-            border: 2px solid #3366ff; border-radius: 30px;
-            width: 1100px; max-width: 95%; padding: 45px; position: relative;
-            transform: scale(0.9); transition: 0.3s; box-shadow: 0 0 50px rgba(51,102,255,0.4);
-        }
-        .modal-overlay.show .modal-box { transform: scale(1); }
-        .btn-close { position: absolute; top: 20px; right: 20px; background: #3366ff; color: white; width: 35px; height: 35px; border-radius: 50%; border:none; font-weight: bold; cursor:pointer; z-index: 10;}
-        
-        /* 基礎彈窗左右佈局 */
-        .modal-flex-layout { display: flex; gap: 40px; }
-        .modal-left-pane { flex: 1.4; display: flex; flex-direction: column; gap: 25px; }
-        .modal-right-pane { flex: 1; display: flex; flex-direction: column; gap: 20px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 40px; }
-
-        /* 文字排版 */
-        .modal-main-title { font-size: 2.2rem; font-weight: 800; line-height: 1.2; color: white; margin: 0 0 5px 0; }
-        .section-block { background: rgba(255,255,255,0.02); border-radius: 15px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .sub-header { color: var(--accent-cyan); font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
-        .modal-desc-list { font-size: 0.9rem; line-height: 1.5; color: #ddd; padding-left: 18px; margin: 0; }
-        .modal-desc-list li { margin-bottom: 5px; }
-
-        /* 進度圈元件 */
-        .circle-wrapper { display: flex; align-items: center; gap: 20px; }
-        .progress-circle {
-            width: 110px; height: 110px; border-radius: 50%;
-            background: conic-gradient(#3366ff var(--p), #13224f 0);
-            display: flex; justify-content: center; align-items: center; position: relative; flex-shrink: 0;
-        }
-        .progress-circle::before { content: ''; position: absolute; width: 86px; height: 86px; background: #05123d; border-radius: 50%; }
-        .progress-value { position: relative; font-size: 1.8rem; font-weight: 800; color: white; }
-
-        /* 右側 Launch 與指標樣式 */
-        .target-launch-header { text-align: center; margin-bottom: 10px; }
-        .target-title { font-size: 0.9rem; color: #aaa; letter-spacing: 1px; font-weight: bold; }
-        .target-date { font-size: 1.5rem; font-weight: 800; color: var(--accent-yellow); margin-top: 4px; display: block; }
-        
-        .stat-box-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .stat-box-grid.two-col { grid-template-columns: 1fr 1fr; }
-        
-        .stat-tag-card {
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-        }
-        .stat-tag-card.column-style { flex-direction: column; align-items: flex-start; gap: 10px; }
-        .stat-meta { display: flex; flex-direction: column; }
-        .stat-label { font-size: 0.8rem; color: #999; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;}
-        .stat-value-group { display: flex; align-items: center; gap: 10px; }
-        .stat-number { font-size: 1.6rem; font-weight: 800; color: var(--stat-green); }
-        .stat-number.orange { color: var(--stat-orange); }
-        .stat-subtext { font-size: 0.75rem; color: #777; margin-top: 2px; font-weight: bold; }
-
-        /* 完美複製 Canva 灰色方塊純白箭頭 */
-        .arrow-box {
-            width: 28px; height: 28px; background: rgba(255,255,255,0.15);
-            border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
-        .arrow-up { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 9px solid #ffffff; }
-        .arrow-down { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 9px solid #ffffff; }
-
-    </style>
-</head>
-<body>
-
-    <div id="page-projects" class="page active">
-        <video id="bg-video" autoplay loop muted playsinline><source src="bg-projects.mp4" type="video/mp4"></video>
-        
-        <div class="projects-container">
-            <button class="btn-nav" onclick="window.open('https://projectannietu.my.canva.site/', '_blank')">< BACK TO HOME</button>
-            
-            <h1>PROJECTS IN PROGRESS</h1>
-            
-            <div class="grid-cards">
-                <div class="project-card">
-                    <div class="card-content">
-                        <div class="icon-group">
-                            <img src="icon-fly.png" class="card-icon" alt="Fly">
-                            <img src="icon-rodent.png" class="card-icon" alt="Rodent">
-                        </div>
-                        <div class="card-title">CONNECTED FLY<br>& RODENT</div>
-                    </div>
-                    <button class="btn-open" onclick="openModal('modal-combined-pest')">OPEN →</button>
-                </div>
-                <div class="project-card">
-                    <div class="card-content">
-                        <img src="icon-line.png" class="card-icon" alt="Line">
-                        <div class="card-title">LINE AI<br>CUSTOMER SERVICE</div>
-                    </div>
-                    <button class="btn-open" onclick="openModal('modal-line')">OPEN →</button>
-                </div>
-                <div class="project-card">
-                    <div class="card-content">
-                        <img src="icon-sched.png" class="card-icon" alt="Schedule">
-                        <div class="card-title">WORKFORCE SMART<br>SCHEDULING SYSTEM</div>
-                    </div>
-                    <button class="btn-open" onclick="openModal('modal-schedule')">OPEN →</button>
-                </div>
-            </div>
-
-            <button class="btn-nav" onclick="window.open('https://projectannietu.my.canva.site/way-to-2027', '_blank')">SEE EVENTS ></button>
-        </div>
-    </div>
-
-    <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
-        
-        <div id="modal-combined-pest" class="modal-box" style="display:none;" onclick="event.stopPropagation()">
-            <button class="btn-close" onclick="closeModal()">X</button>
-            <div class="modal-flex-layout">
-                <div class="modal-left-pane">
-                    <div class="circle-wrapper section-block">
-                        <div class="progress-circle" style="--p: 45%;"><span class="progress-value">45%</span></div>
-                        <div>
-                            <div class="modal-main-title" style="font-size:1.6rem;">CONNECTED FLY</div>
-                            <span class="sub-header">STATUS</span>
-                            <ul class="modal-desc-list">
-                                <li>網關、攝像頭-BSMI/NCC檢測</li>
-                                <li>FIELD TEST - 4 SITES</li>
-                            </ul>
-                            <span class="sub-header" style="margin-top:5px;">TO BE DONE</span>
-                            <ul class="modal-desc-list">
-                                <li>定義台灣服務及商業模式</li>
-                                <li>首批200台下單 - EST. 2026 JUL.</li>
-                                <li>智慧病媒防治論壇暨產品發布會</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="circle-wrapper section-block">
-                        <div class="progress-circle" style="--p: 10%;"><span class="progress-value">10%</span></div>
-                        <div>
-                            <div class="modal-main-title" style="font-size:1.6rem;">CONNECTED RODENT</div>
-                            <span class="sub-header">STATUS</span>
-                            <ul class="modal-desc-list">
-                                <li>通訊穩定度測試</li>
-                            </ul>
-                            <span class="sub-header" style="margin-top:5px;">TO BE DONE</span>
-                            <ul class="modal-desc-list">
-                                <li>BSMI/NCC 認證</li>
+            z-index: 9999; opacity: 0; visibility: hidden; transition: opacity 0.3s ease
