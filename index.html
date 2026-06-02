@@ -6,9 +6,8 @@
     <title>Annie Tu - Digital Transformation Projects</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ================= 總體設定 ================= */
         :root {
-            --primary-blue: #0052cc;
+            --primary-blue: #3366ff;
             --dark-blue: #020b2d;
             --accent-cyan: #33ccff;
             --accent-yellow: #ffcc00;
@@ -23,22 +22,10 @@
             background-color: var(--dark-blue);
         }
         * { box-sizing: border-box; }
-        
-        .page {
-            display: none; width: 100%; min-height: 100vh;
-            position: absolute; top: 0; left: 0;
-            animation: fadeIn 0.5s ease-in-out;
-            background-size: cover; background-position: center;
-        }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ================= 裝飾與排版 ================= */
-        .ecolab-logo { position: absolute; top: 30px; left: 40px; width: 150px; z-index: 10; }
-        
-        #page-projects { position: relative; overflow: hidden; }
+        /* ================= 專案主頁面 ================= */
+        #page-projects { position: relative; overflow-x: hidden; min-height: 100vh; }
         #bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
-        
         .projects-container { 
             padding: 80px 10%; display: flex; flex-direction: column; 
             align-items: center; z-index: 2; position: relative; 
@@ -48,163 +35,238 @@
         
         .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; max-width: 950px; margin-bottom: 20px;}
         .project-card {
-            background: rgba(10, 30, 100, 0.4);
-            border: 2px solid #3366ff; border-radius: 20px;
+            background: rgba(10, 30, 100, 0.4); border: 2px solid #3366ff; border-radius: 20px;
             padding: 25px; display: flex; align-items: center; justify-content: space-between;
             backdrop-filter: blur(15px); transition: 0.3s; box-shadow: 0 0 20px rgba(51,102,255,0.3);
         }
-        .project-card:hover { transform: scale(1.02); border-color: var(--accent-cyan); box-shadow: 0 0 30px rgba(51,204,255,0.5); }
+        .project-card:hover { transform: scale(1.02); border-color: var(--accent-cyan); }
         .card-content { display: flex; align-items: center; gap: 20px; }
         .card-icon { width: 70px; height: 70px; object-fit: contain; }
-        .card-title { font-weight: 800; font-size: 1.1rem; line-height: 1.3; }
+        .card-title { font-weight: 800; font-size: 1.1rem; line-height: 1.3; color: white; }
         .btn-open { background: white; color: #0033cc; padding: 8px 20px; border-radius: 20px; font-weight: 800; cursor: pointer; border:none;}
 
-        /* ================= 彈出視窗 ================= */
+        .btn-nav {
+            background: #33cc99; color: white; padding: 12px 40px; border-radius: 30px;
+            font-size: 1.1rem; font-weight: 800; cursor: pointer; border:none; z-index: 5; margin: 20px 0;
+        }
+
+        /* ================= 彈出視窗 (依照 Canva 調整) ================= */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
             display: flex; justify-content: center; align-items: center;
             z-index: 9999; opacity: 0; pointer-events: none; transition: 0.3s;
         }
         .modal-overlay.show { opacity: 1; pointer-events: auto; }
+        
         .modal-box {
             background: linear-gradient(135deg, #05103a, #0a1e64);
             border: 2px solid #3366ff; border-radius: 30px;
-            width: 850px; max-width: 95%; padding: 50px; position: relative;
+            width: 1000px; max-width: 95%; padding: 50px; position: relative;
             transform: scale(0.9); transition: 0.3s; box-shadow: 0 0 50px rgba(51,102,255,0.4);
+            display: flex; flex-direction: column;
         }
         .modal-overlay.show .modal-box { transform: scale(1); }
-        .btn-close { position: absolute; top: 20px; right: 20px; background: #3366ff; color: white; width: 35px; height: 35px; border-radius: 50%; border:none; font-weight: bold; cursor:pointer; }
+        .btn-close { position: absolute; top: 20px; right: 20px; background: #3366ff; color: white; width: 35px; height: 35px; border-radius: 50%; border:none; font-weight: bold; cursor:pointer; z-index: 10;}
         
-        .modal-header-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 30px; color: white; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;}
-        .modal-body { display: flex; gap: 40px; }
-        .modal-left { flex: 1; }
-        .modal-right { flex: 1.2; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-content: start;}
+        /* 三欄布局容器 */
+        .modal-grid-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr; /* 左(文字) 中(進度) 右(數據) */
+            gap: 30px;
+            align-items: center;
+        }
 
+        /* 左側：文字區 */
+        .modal-text-col { display: flex; flex-direction: column; gap: 15px; }
+        .modal-title-big { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: white; }
+        .modal-desc-list { font-size: 0.95rem; line-height: 1.6; color: #eee; padding-left: 20px; margin: 0; }
+        .modal-desc-list li { margin-bottom: 8px; }
+        .sub-header { color: var(--accent-cyan); font-weight: 800; font-size: 1rem; margin-top: 10px; display: block;}
+
+        /* 中間：進度圈區 */
+        .modal-center-col { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;}
+        .target-box-new { margin-bottom: 20px; }
+        .target-label { font-size: 0.9rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
+        .target-date-yellow { font-size: 1.4rem; font-weight: 800; color: var(--accent-yellow); display: block; margin-top: 5px;}
+        
         .progress-circle {
-            width: 150px; height: 150px; border-radius: 50%;
+            width: 180px; height: 180px; border-radius: 50%;
             background: conic-gradient(#3366ff var(--p), #1a2a5a 0);
-            display: flex; justify-content: center; align-items: center; margin: 0 auto 20px; position: relative;
+            display: flex; justify-content: center; align-items: center; position: relative;
         }
-        .progress-circle::before { content: ''; position: absolute; width: 120px; height: 120px; background: #05103a; border-radius: 50%; }
-        .progress-value { position: relative; font-size: 2.5rem; font-weight: 800; }
+        .progress-circle::before { content: ''; position: absolute; width: 145px; height: 145px; background: #05103a; border-radius: 50%; }
+        .progress-value { position: relative; font-size: 3rem; font-weight: 800; color: white; }
+        .bottom-note { font-size: 0.85rem; color: #888; margin-top: 20px; line-height: 1.4; }
 
-        .stat-tag {
-            background: rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; flex-direction: column; align-items: center;
+        /* 右側：數據標籤區 */
+        .modal-right-col { display: flex; flex-direction: column; gap: 15px; }
+        .stat-card {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(5px);
         }
-        .stat-label { font-size: 0.75rem; color: #aaa; margin-bottom: 5px; text-transform: uppercase; }
-        .stat-value { font-size: 1.4rem; font-weight: 800; color: var(--stat-green); display: flex; align-items: center; gap: 5px;}
-        .stat-value.orange { color: var(--stat-orange); }
-        .arrow-up { width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #ffffff; }
-        .arrow-down { width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 12px solid #ffffff; }
-
-        .target-box { background: rgba(51, 102, 255, 0.2); border-radius: 10px; padding: 10px; text-align: center; margin-bottom: 20px;}
-        .target-date { color: var(--accent-yellow); font-weight: 800; font-size: 1.1rem; }
-
-        /* ================= 連結按鈕 (上下兩個) ================= */
-        .btn-nav {
-            background: #33cc99; color: white; padding: 12px 40px; border-radius: 30px;
-            font-size: 1.1rem; font-weight: 800; transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(51, 204, 153, 0.4); cursor: pointer; border:none; z-index: 5;
-        }
-        .btn-nav:hover { transform: scale(1.05); background: #2bb986; }
+        .stat-info { display: flex; flex-direction: column; }
+        .stat-name { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
+        .stat-num { font-size: 1.5rem; font-weight: 800; color: var(--stat-green); display: flex; align-items: center; gap: 8px; }
+        .stat-num.orange { color: var(--stat-orange); }
         
-        .nav-top { margin-bottom: 20px; background: rgba(51, 102, 255, 0.6); box-shadow: 0 4px 15px rgba(51, 102, 255, 0.4);}
-        .nav-top:hover { background: rgba(51, 102, 255, 1); }
-        .nav-bottom { margin-top: 30px; }
+        /* 純白色箭頭 */
+        .arrow-up { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 10px solid #ffffff; }
+        .arrow-down { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 10px solid #ffffff; }
 
     </style>
 </head>
 <body>
 
-    <img src="ecolab-logo.png" class="ecolab-logo" alt="Logo" onerror="this.style.display='none'">
-
     <div id="page-projects" class="page active">
         <video id="bg-video" autoplay loop muted playsinline><source src="bg-projects.mp4" type="video/mp4"></video>
         
         <div class="projects-container">
-            <button class="btn-nav nav-top" onclick="window.open('https://projectannietu.my.canva.site/', '_blank')">< BACK TO HOME</button>
+            <button class="btn-nav" onclick="window.open('https://projectannietu.my.canva.site/', '_blank')">< BACK TO HOME</button>
             
             <h1>PROJECTS IN PROGRESS</h1>
             
             <div class="grid-cards">
                 <div class="project-card">
                     <div class="card-content">
-                        <img src="icon-fly.png" class="card-icon" alt="Fly" onerror="this.style.display='none'">
+                        <img src="icon-fly.png" class="card-icon" alt="Fly">
                         <div class="card-title">CONNECTED FLY<br>& RODENT</div>
                     </div>
                     <button class="btn-open" onclick="openModal('modal-combined-pest')">OPEN →</button>
                 </div>
                 <div class="project-card">
                     <div class="card-content">
-                        <img src="icon-line.png" class="card-icon" alt="Line" onerror="this.style.display='none'">
+                        <img src="icon-line.png" class="card-icon" alt="Line">
                         <div class="card-title">LINE AI<br>CUSTOMER SERVICE</div>
                     </div>
                     <button class="btn-open" onclick="openModal('modal-line')">OPEN →</button>
                 </div>
                 <div class="project-card">
                     <div class="card-content">
-                        <img src="icon-sched.png" class="card-icon" alt="Schedule" onerror="this.style.display='none'">
+                        <img src="icon-sched.png" class="card-icon" alt="Schedule">
                         <div class="card-title">WORKFORCE SMART<br>SCHEDULING SYSTEM</div>
                     </div>
                     <button class="btn-open" onclick="openModal('modal-schedule')">OPEN →</button>
                 </div>
             </div>
 
-            <button class="btn-nav nav-bottom" onclick="window.open('https://projectannietu.my.canva.site/way-to-2027', '_blank')">SEE EVENTS ></button>
+            <button class="btn-nav" onclick="window.open('https://projectannietu.my.canva.site/way-to-2027', '_blank')">SEE EVENTS ></button>
         </div>
     </div>
 
     <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
+        
         <div id="modal-combined-pest" class="modal-box" style="display:none;" onclick="event.stopPropagation()">
             <button class="btn-close" onclick="closeModal()">X</button>
-            <div class="modal-header-title">CONNECTED FLY & RODENT</div>
-            <div class="modal-body">
-                <div class="modal-left">
-                    <div class="target-box">TARGET LAUNCH<br><span class="target-date">2026 END</span></div>
-                    <div class="progress-circle" style="--p: 45%;"><span class="progress-value">45%</span></div>
-                    <p style="text-align: center; font-size: 0.9rem; color: #aaa;">CONNECTED FLY STATUS:<br>BSMI/NCC Testing</p>
+            <div class="modal-grid-layout">
+                <div class="modal-text-col">
+                    <div class="modal-title-big">CONNECTED FLY<br>& RODENT</div>
+                    <span class="sub-header">CONNECTED FLY STATUS</span>
+                    <ul class="modal-desc-list">
+                        <li>網關、攝像頭-BSMI/NCC檢測中</li>
+                        <li>FIELD TEST - 4 SITES</li>
+                    </ul>
+                    <span class="sub-header">TO BE DONE</span>
+                    <ul class="modal-desc-list">
+                        <li>定義台灣服務及商業模式</li>
+                        <li>首批 200 台下單 (EST. 2026 JUL.)</li>
+                    </ul>
                 </div>
-                <div class="modal-right">
-                    <div class="stat-tag"><span class="stat-label">PE Sales Revenue</span><span class="stat-value">45% <div class="arrow-up"></div></span><p style="font-size: 10px; margin:0;">(2027 VS 2028)</p></div>
-                    <div class="stat-tag"><span class="stat-label">Productivity</span><span class="stat-value">50-80% <div class="arrow-up"></div></span></div>
-                    <div class="stat-tag"><span class="stat-label">Quality</span><span class="stat-value">∞ % <div class="arrow-up"></div></span></div>
-                    <div class="stat-tag"><span class="stat-label">Field Test</span><span class="stat-value" style="color:var(--accent-cyan)">4 SITES</span></div>
+                <div class="modal-center-col">
+                    <div class="target-box-new">
+                        <span class="target-label">TARGET LAUNCH</span>
+                        <span class="target-date-yellow">2026 END</span>
+                    </div>
+                    <div class="progress-circle" style="--p: 45%;"><span class="progress-value">45%</span></div>
+                </div>
+                <div class="modal-right-col">
+                    <div class="stat-card">
+                        <div class="stat-info"><span class="stat-name">Sales Revenue</span><span class="stat-num">45%<div class="arrow-up"></div></span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info"><span class="stat-name">Productivity</span><span class="stat-num">80%<div class="arrow-up"></div></span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info"><span class="stat-name">Quality</span><span class="stat-num">∞%<div class="arrow-up"></div></span></div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="modal-line" class="modal-box" style="display:none;" onclick="event.stopPropagation()">
             <button class="btn-close" onclick="closeModal()">X</button>
-            <div class="modal-header-title">LINE AI CUSTOMER SERVICE</div>
-            <div class="modal-body">
-                <div class="modal-left">
-                    <div class="target-box">STAGE 1 LAUNCH<br><span class="target-date">2026 JUL.</span></div>
-                    <div class="progress-circle" style="--p: 71%;"><span class="progress-value">71%</span></div>
-                    <p style="text-align: center; font-size: 0.8rem; color: #aaa;">Stage 2 (Survey) - 0%<br>Est. 2028 Launch</p>
+            <div class="modal-grid-layout">
+                <div class="modal-text-col">
+                    <div class="modal-title-big">LINE AI CUSTOMER<br>SERVICE</div>
+                    <span class="sub-header">STAGE 1 TARGET</span>
+                    <ul class="modal-desc-list">
+                        <li>提升客戶需求處理效率</li>
+                        <li>利用AI減少人力問答時間成本</li>
+                    </ul>
+                    <span class="sub-header">STATUS</span>
+                    <ul class="modal-desc-list">
+                        <li>訓練AI機器人回覆及用語</li>
+                        <li>建置與機關研發之醫療官方帳號入口</li>
+                    </ul>
                 </div>
-                <div class="modal-right" style="grid-template-columns: 1fr;">
-                    <div class="stat-tag" style="flex-direction: row; justify-content: space-between;"><span class="stat-label">Reply Efficiency</span><span class="stat-value">100% <div class="arrow-up"></div></span></div>
-                    <div class="stat-tag" style="flex-direction: row; justify-content: space-between;"><span class="stat-label">Message Oversight</span><span class="stat-value">100% <div class="arrow-down"></div></span></div>
-                    <div class="stat-tag" style="flex-direction: row; justify-content: space-between;"><span class="stat-label">Time Saving</span><span class="stat-value">50% <div class="arrow-down"></div></span></div>
+                <div class="modal-center-col">
+                    <div class="target-box-new">
+                        <span class="target-label">STAGE 1 LAUNCH</span>
+                        <span class="target-date-yellow">2026 JUL.</span>
+                    </div>
+                    <div class="progress-circle" style="--p: 71%;"><span class="progress-value">71%</span></div>
+                    <p class="bottom-note">Stage 2 (Survey) - 0%<br>Est. 2028 Launch</p>
+                </div>
+                <div class="modal-right-col">
+                    <div class="stat-card">
+                        <div class="stat-info"><span class="stat-name">Efficiency</span><span class="stat-num">100%<div class="arrow-up"></div></span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info"><span class="stat-name">Oversight</span><span class="stat-num">100%<div class="arrow-down"></div></span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info"><span class="stat-name">Time Saving</span><span class="stat-num">50%<div class="arrow-down"></div></span></div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="modal-schedule" class="modal-box" style="display:none;" onclick="event.stopPropagation()">
             <button class="btn-close" onclick="closeModal()">X</button>
-            <div class="modal-header-title">WORKFORCE SMART SCHEDULING</div>
-            <div class="modal-body">
-                <div class="modal-left">
-                    <div class="target-box">TARGET LAUNCH<br><span class="target-date">2026 SEP.</span></div>
+            <div class="modal-grid-layout">
+                <div class="modal-text-col">
+                    <div class="modal-title-big">WORKFORCE SMART<br>SCHEDULING</div>
+                    <span class="sub-header">TARGET</span>
+                    <ul class="modal-desc-list">
+                        <li>節省服務主任排班時間</li>
+                        <li>智能偵測衝突，精準防錯</li>
+                        <li>資訊即時同步，班表一改即發</li>
+                        <li>自動數據化資產管理</li>
+                    </ul>
+                    <span class="sub-header">STATUS</span>
+                    <ul class="modal-desc-list">
+                        <li>環境架設及需求規格確認</li>
+                        <li>2026 JUL 開始需求測試</li>
+                    </ul>
+                </div>
+                <div class="modal-center-col">
+                    <div class="target-box-new">
+                        <span class="target-label">TARGET LAUNCH</span>
+                        <span class="target-date-yellow">2026 SEP.</span>
+                    </div>
                     <div class="progress-circle" style="--p: 30%;"><span class="progress-value">30%</span></div>
                 </div>
-                <div class="modal-right">
-                    <div class="stat-tag"><span class="stat-label">排班時間</span><span class="stat-value">50% <div class="arrow-down"></div></span></div>
-                    <div class="stat-tag"><span class="stat-label">排班準確</span><span class="stat-value">100% <div class="arrow-up"></div></span></div>
-                    <div class="stat-tag"><span class="stat-label">資訊同步</span><span class="stat-value">100% <div class="arrow-up"></div></span></div>
-                    <div class="stat-tag"><span class="stat-label">人員產能</span><span class="stat-value">10% <div class="arrow-up"></div></span></div>
+                <div class="modal-right-col">
+                    <div class="stat-card">
+                        <div class="stat-info"><span class="stat-name">排班時間</span><span class="stat-num">50%<div class="arrow-down"></div></span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info"><span class="stat-name">排班準確</span><span class="stat-num">100%<div class="arrow-up"></div></span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info"><span class="stat-name">資訊同步</span><span class="stat-num">100%<div class="arrow-up"></div></span></div>
+                    </div>
                 </div>
             </div>
         </div>
